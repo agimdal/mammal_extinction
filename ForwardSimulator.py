@@ -1,5 +1,5 @@
-#!/usr/bin/env python 
-# Created by Daniele Silvestro on 02/03/2012 => dsilvestro@senckenberg.de 
+#!/usr/bin/env python
+# Created by Daniele Silvestro on 02/03/2012 => dsilvestro@senckenberg.de
 from numpy import *
 import numpy as np
 import sys, os, csv
@@ -15,36 +15,36 @@ def simulate(L,M,root,s_species,scale=1.,maxSP=np.inf):
 	ts=list()
 	te=list()
 	L,M,root=L/scale,M/scale,int(root*scale)
-	
-	for i in range(s_species): 
+
+	for i in range(s_species):
 		ts.append(root)
 		te.append(0)
-	
+
 	### ADD PROBABILITIES OF STATUS CHANGE
-	for t in range(root,0): # time		
+	for t in range(root,0): # time
 		TE=len(te)
 		if TE>maxSP: break
 		for j in range(TE): # extant lineages
 			if te[j]==0:
 				ran=np.random.random()
 				#print ran, L,M[j]
-				if ran<L: 
+				if ran<L:
 					te.append(0) # add species
 					ts.append(t) # sp time
 				elif ran < (L+M[j]): # extinction
 					te[j]=t
-	
+
 	te=array(te)
 	return -array(ts)/scale, -(te)/scale
 
 
 ############### SIMULATION SETTINGS ########################################
 def write_to_file(f, o):
-	sumfile = open(f , "wb") 
+	sumfile = open(f , "wb")
 	sumfile.writelines(o)
 	sumfile.close()
 
-logfile = open("sim.txt" , "wb") 
+logfile = open("sim.txt" , "wb")
 wlog=csv.writer(logfile, delimiter='\t')
 
 
@@ -66,7 +66,7 @@ print_LTT=True
 
 ############ (REPLACE WITH REAL VALUES) ####################################
 L0 = 0.00001   # speciation rate at the present
-Mcat = np.array([0.00001, 0.2, 0.4]) # probability of extinction in 1 year (LC, VU, EN, ...) 
+Mcat = np.array([0.00001, 0.2, 0.4]) # probability of extinction in 1 year (LC, VU, EN, ...)
 P_better = 0.01 # per-lineage probability of change in status (per year): Mcat -= 1
 P_worse  = 0.05 # per-lineage probability of change in status (per year): Mcat += 1
 
@@ -79,7 +79,7 @@ M_species = Mcat[species_cat] # extinction probabilities (per year)
 
 
 
-forward_sim=np.zeros((time_range,n_reps))	
+forward_sim=np.zeros((time_range,n_reps))
 
 for sim in range(n_reps):
 	sys.stdout.write(".")
@@ -93,9 +93,10 @@ for sim in range(n_reps):
 		#nlog=int((n))
 		ltt += "\n%s\t%s\t%s" % (i, n, "*"*n)
 		N[i]=n
-	
+
 	forward_sim[:,sim]=N
 	if print_LTT: print ltt
+	o = []
 	for i in range(len(FA)):
 		o+= "%s\t%s\t%s\n" % (i+1,FA[i],LO[i])
 
